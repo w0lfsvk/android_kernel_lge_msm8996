@@ -910,4 +910,7 @@ config LGE_ENABLE_HDSET_FACTORY
 	bool "disable detect_extn_cable feature on factory mode"
 	default n
 
+config SOUND_CONTROL
+	bool "Sound control for wcd9335"
+
 endmenu
