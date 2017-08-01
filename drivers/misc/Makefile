@@ -76,6 +76,6 @@ obj-$(CONFIG_MEMORY_STATE_TIME) += memory_state_time.o
 
 obj-$(CONFIG_LGE_IRRC)		+= lge_uei_irrc.o
 
-# TODO: remove me b/62057517
+# TODO: remove me b/62058353
 subdir-ccflags-y += \
 	-Wno-ignored-attributes
