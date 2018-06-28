@@ -498,10 +498,8 @@ static int rh_call_control (struct usb_hcd *hcd, struct urb *urb)
 	 */
 	tbuf_size =  max_t(u16, sizeof(struct usb_hub_descriptor), wLength);
 	tbuf = kzalloc(tbuf_size, GFP_KERNEL);
-	if (!tbuf) {
-		status = -ENOMEM;
-		goto err_alloc;
-	}
+	if (!tbuf)
+		return -ENOMEM;
 
 	bufp = tbuf;
 
@@ -704,7 +702,6 @@ error:
 	}
 
 	kfree(tbuf);
- err_alloc:
 
 	/* any errors get returned through the urb completion */
 	spin_lock_irq(&hcd_root_hub_lock);
@@ -2157,64 +2154,7 @@ int usb_hcd_get_frame_number (struct usb_device *udev)
 	return hcd->driver->get_frame_number (hcd);
 }
 
-int usb_hcd_sec_event_ring_setup(struct usb_device *udev,
-	unsigned intr_num)
-{
-	struct usb_hcd	*hcd = bus_to_hcd(udev->bus);
-
-	if (!HCD_RH_RUNNING(hcd))
-		return 0;
-
-	return hcd->driver->sec_event_ring_setup(hcd, intr_num);
-}
-
-int usb_hcd_sec_event_ring_cleanup(struct usb_device *udev,
-	unsigned intr_num)
-{
-	struct usb_hcd	*hcd = bus_to_hcd(udev->bus);
-
-	if (!HCD_RH_RUNNING(hcd))
-		return 0;
-
-	return hcd->driver->sec_event_ring_cleanup(hcd, intr_num);
-}
-
 /*-------------------------------------------------------------------------*/
-
-dma_addr_t
-usb_hcd_get_sec_event_ring_dma_addr(struct usb_device *udev,
-	unsigned intr_num)
-{
-	struct usb_hcd	*hcd = bus_to_hcd(udev->bus);
-
-	if (!HCD_RH_RUNNING(hcd))
-		return 0;
-
-	return hcd->driver->get_sec_event_ring_dma_addr(hcd, intr_num);
-}
-
-dma_addr_t
-usb_hcd_get_dcba_dma_addr(struct usb_device *udev)
-{
-	struct usb_hcd	*hcd = bus_to_hcd(udev->bus);
-
-	if (!HCD_RH_RUNNING(hcd))
-		return 0;
-
-	return hcd->driver->get_dcba_dma_addr(hcd, udev);
-}
-
-dma_addr_t
-usb_hcd_get_xfer_ring_dma_addr(struct usb_device *udev,
-		struct usb_host_endpoint *ep)
-{
-	struct usb_hcd	*hcd = bus_to_hcd(udev->bus);
-
-	if (!HCD_RH_RUNNING(hcd))
-		return 0;
-
-	return hcd->driver->get_xfer_ring_dma_addr(hcd, udev, ep);
-}
 
 #ifdef	CONFIG_PM
 
@@ -2593,9 +2533,6 @@ static void hcd_release(struct kref *kref)
 
 	mutex_lock(&usb_port_peer_mutex);
 	if (hcd->primary_hcd == hcd)
-#ifdef CONFIG_LGE_USB_G_ANDROID
-		if (!hcd->shared_hcd)
-#endif
 		kfree(hcd->bandwidth_mutex);
 	if (hcd->shared_hcd) {
 		struct usb_hcd *peer = hcd->shared_hcd;
@@ -2606,9 +2543,6 @@ static void hcd_release(struct kref *kref)
 	}
 	mutex_unlock(&usb_port_peer_mutex);
 	kfree(hcd);
-#ifdef CONFIG_LGE_USB_G_ANDROID
-	hcd = NULL;
-#endif
 }
 
 struct usb_hcd *usb_get_hcd (struct usb_hcd *hcd)
