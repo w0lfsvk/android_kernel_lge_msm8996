@@ -517,6 +517,13 @@ config LGE_MSM8996_ENABLE_VENDOR
 	help
 	  Enables the /vendor partition in device-tree fstab
 
+config LGE_MSM8996_ENABLE_SYSTEM_AS_ROOT
+	bool "Enables using the system partition as rootfs"
+	depends on MACH_LGE
+	help
+	  Enables using system as rootfs for system-as-root enabled
+	  generic images
+
 endmenu
 
 source "drivers/soc/qcom/lge/power/Kconfig"

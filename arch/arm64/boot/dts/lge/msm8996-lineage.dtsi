@@ -21,9 +21,13 @@
 #else
 				/delete-node/ vendor;
 #endif
+#ifndef CONFIG_LGE_MSM8996_ENABLE_SYSTEM_AS_ROOT
 				system {
 					dev = "/dev/block/platform/soc/624000.ufshc/by-name/system";
 				};
+#else
+				/delete-node/ system;
+#endif
 			};
 		};
 	};
