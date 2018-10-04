@@ -38,15 +38,6 @@
 #include "../codecs/wcd9335.h"
 #include "../codecs/wsa881x.h"
 
-#ifdef CONFIG_SND_SOC_ES9018
-#ifdef CONFIG_LGE_PM_LGE_POWER_CLASS_BOARD_REVISION
-#include <soc/qcom/lge/power/lge_board_revision.h>
-#include <soc/qcom/lge/power/lge_power_class.h>
-#else
-#include <soc/qcom/lge/board_lge.h>
-#endif
-#endif
-
 #define DRV_NAME "msm8996-asoc-snd"
 
 #define SAMPLING_RATE_8KHZ      8000
@@ -186,7 +177,6 @@ struct msm8996_asoc_mach_data {
 };
 
 #ifdef CONFIG_SND_USE_SEC_MI2S
-
 static struct afe_clk_set sec_mi2s_clk = {
 	AFE_API_VERSION_I2S_CONFIG,
 	Q6AFE_LPASS_CLK_ID_SEC_MI2S_IBIT,
@@ -242,6 +232,7 @@ static void *def_tasha_mbhc_cal(void);
 static int msm_snd_enable_codec_ext_clk(struct snd_soc_codec *codec,
 					int enable, bool dapm);
 static int msm8996_wsa881x_init(struct snd_soc_component *component);
+
 
 /*
  * Need to report LINEIN
@@ -664,6 +655,7 @@ static const struct snd_soc_dapm_widget msm8996_dapm_widgets[] = {
 	SND_SOC_DAPM_MIC("Analog Mic2", NULL),
 	SND_SOC_DAPM_MIC("Analog Mic3", NULL),
 #endif
+
 	SND_SOC_DAPM_MIC("Digital Mic0", NULL),
 	SND_SOC_DAPM_MIC("Digital Mic1", NULL),
 	SND_SOC_DAPM_MIC("Digital Mic2", NULL),
@@ -787,7 +779,6 @@ static int slim6_rx_sample_rate_put(struct snd_kcontrol *kcontrol,
 		slim6_rx_sample_rate = SAMPLING_RATE_48KHZ;
 		break;
 	}
-
 #ifdef CONFIG_SND_USE_SEC_MI2S
 	sec_mi2s_sample_rate = slim6_rx_sample_rate;
 #endif
@@ -921,7 +912,6 @@ static int slim0_rx_sample_rate_put(struct snd_kcontrol *kcontrol,
 	default:
 		slim0_rx_sample_rate = SAMPLING_RATE_48KHZ;
 	}
-
 	pr_debug("%s: slim0_rx_sample_rate = %d\n", __func__,
 		 slim0_rx_sample_rate);
 
@@ -4330,11 +4320,6 @@ static struct snd_soc_card *populate_snd_card_dailinks(struct device *dev)
 			}
 			card->num_links = LGE_DAI_LINK_ID_BASE;
 		}
-#ifdef CONFIG_SND_SOC_ES9018
-		enable_es9218p = true;
-		if (!strcmp(msm8996_lge_dai_links[3].codec_name, "es9018-codec.6-0048"))
-			   msm8996_lge_dai_links[3].codec_name = "es9018-codec.3-0048";
-#endif
 		memcpy(msm8996_tasha_dai_links + card->num_links,
 			   msm8996_lge_dai_links, sizeof(msm8996_lge_dai_links));
 		card->num_links += ARRAY_SIZE(msm8996_lge_dai_links);		
@@ -4603,7 +4588,6 @@ static int msm8996_asoc_machine_probe(struct platform_device *pdev)
 	}
 
 	spdev = pdev;
-
 	ret = msm8996_populate_dai_link_component_of_node(card);
 	if (ret) {
 		ret = -EPROBE_DEFER;
